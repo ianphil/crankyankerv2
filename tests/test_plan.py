@@ -60,14 +60,14 @@ def test_create_sample_plan():
 
 client = TestClient(app)
 
-def test_get_plan_not_found():
-    """Test that getting a non-existent plan returns 404"""
-    response = client.get("/plans/non-existent-id")
+def test_get_plan_user_not_found():
+    """Test that getting plans for a non-existent user returns 404"""
+    response = client.get("/plans/non-existent-user")
     assert response.status_code == 404
-    assert response.json() == {"detail": "Plan not found"}
+    assert response.json() == {"detail": "User not found"}
 
 def test_get_plan_success(tmp_path, monkeypatch):
-    """Test that getting an existing plan returns the plan data"""
+    """Test that getting plans for an existing user returns the user's plans"""
     # Create temporary data directory structure
     data_dir = tmp_path / "data"
     user_dir = data_dir / "user123" / "training_plans"
@@ -89,6 +89,7 @@ def test_get_plan_success(tmp_path, monkeypatch):
     # Mock the data directory path
     monkeypatch.chdir(tmp_path)
     
-    response = client.get("/plans/test-plan-123")
+    response = client.get("/plans/user123")
     assert response.status_code == 200
-    assert response.json() == plan_data
+    expected_response = {"user_id": "user123", "plans": [plan_data]}
+    assert response.json() == expected_response

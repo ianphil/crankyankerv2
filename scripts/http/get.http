@@ -11,6 +11,6 @@ GET {{baseUrl}}/items/42?q=skippy
 Accept: application/json
 
 ###
-# Get sample training plan by full ID
-GET {{baseUrl}}/plans/2b12a982-a223-4e52-baa5-51d4e5c321e8
+# Get training plans by user ID
+GET {{baseUrl}}/plans/user123
 Accept: application/json
