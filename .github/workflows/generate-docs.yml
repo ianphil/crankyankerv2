@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
   pages: write
   id-token: write
@@ -69,6 +69,13 @@ jobs:
       run: |
         redoc-cli build openapi.json --output api-docs.html --title "Training Plan API Documentation"
         
+    - name: Prepare documentation for deployment
+      run: |
+        mkdir -p docs
+        cp api-docs.html docs/
+        cp openapi.json docs/
+        echo "Documentation files prepared for deployment"
+        
     - name: Upload documentation artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -83,19 +90,9 @@ jobs:
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: .
+        publish_dir: docs
         publish_branch: gh-pages
-        destination_dir: docs
-        keep_files: true
-        include_files: |
-          api-docs.html
-          openapi.json
-        exclude_files: |
-          .github/**
-          app/**
-          tests/**
-          scripts/**
-          data/**
+        keep_files: false
           
     - name: Comment PR with documentation links
       if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
