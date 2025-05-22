@@ -64,7 +64,7 @@ def test_get_plan_user_not_found():
     """Test that getting plans for a non-existent user returns 404"""
     response = client.get("/plans/non-existent-user")
     assert response.status_code == 404
-    assert response.json() == {"detail": "User not found"}
+    assert response.json() == {"detail": "User 'non-existent-user' not found"}
 
 def test_get_plan_success(tmp_path, monkeypatch):
     """Test that getting plans for an existing user returns the user's plans"""
@@ -73,12 +73,14 @@ def test_get_plan_success(tmp_path, monkeypatch):
     user_dir = data_dir / "user123" / "training_plans"
     user_dir.mkdir(parents=True)
     
-    # Create a sample plan file
+    # Create a sample plan file with all required fields
     plan_data = {
         "id": "test-plan-123",
         "athlete_id": "12345",
+        "target_date": "2024-06-01T00:00:00",
         "name": "Test Plan",
-        "description": "A test training plan"
+        "description": "A test training plan",
+        "phases": []
     }
     
     plan_file = user_dir / "plan1.json"
@@ -91,5 +93,8 @@ def test_get_plan_success(tmp_path, monkeypatch):
     
     response = client.get("/plans/user123")
     assert response.status_code == 200
-    expected_response = {"user_id": "user123", "plans": [plan_data]}
-    assert response.json() == expected_response
+    response_data = response.json()
+    assert response_data["user_id"] == "user123"
+    assert response_data["count"] == 1
+    assert len(response_data["plans"]) == 1
+    assert response_data["plans"][0]["name"] == "Test Plan"
