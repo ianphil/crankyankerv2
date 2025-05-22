@@ -1,6 +1,8 @@
 import pytest
 from datetime import datetime, timedelta
+from fastapi.testclient import TestClient
 from app.training_plan.plan import Plan, Phase, Block, Workout
+from app.main import app
 
 # Make sure this file is loaded by pytest
 pytestmark = pytest.mark.usefixtures()
@@ -54,3 +56,39 @@ def test_create_sample_plan():
     assert len(training_plan.phases[0].blocks[0].workouts) == 2
     assert training_plan.phases[0].blocks[0].workouts[0].name == "Easy Run"
     assert training_plan.phases[0].blocks[0].workouts[1].name == "Tempo Run"
+
+
+client = TestClient(app)
+
+def test_get_plan_not_found():
+    """Test that getting a non-existent plan returns 404"""
+    response = client.get("/plans/non-existent-id")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Plan not found"}
+
+def test_get_plan_success(tmp_path, monkeypatch):
+    """Test that getting an existing plan returns the plan data"""
+    # Create temporary data directory structure
+    data_dir = tmp_path / "data"
+    user_dir = data_dir / "user123" / "training_plans"
+    user_dir.mkdir(parents=True)
+    
+    # Create a sample plan file
+    plan_data = {
+        "id": "test-plan-123",
+        "athlete_id": "12345",
+        "name": "Test Plan",
+        "description": "A test training plan"
+    }
+    
+    plan_file = user_dir / "plan1.json"
+    with open(plan_file, 'w') as f:
+        import json
+        json.dump(plan_data, f)
+    
+    # Mock the data directory path
+    monkeypatch.chdir(tmp_path)
+    
+    response = client.get("/plans/test-plan-123")
+    assert response.status_code == 200
+    assert response.json() == plan_data

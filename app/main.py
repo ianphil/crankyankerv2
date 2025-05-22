@@ -2,7 +2,7 @@ import json
 import os
 from fastapi import FastAPI, HTTPException
 from pathlib import Path
-from src.app.training_plan.plan import Plan
+from app.training_plan.plan import Plan
 app = FastAPI()
 
 @app.get("/")
