@@ -13,20 +13,25 @@ def read_root():
 def read_item(item_id: int, q: str | None = None):
     return {"item_id": item_id, "q": q}
 
-@app.get("/plans/{plan_id}")
-def get_plan(plan_id: str):
-    """Get a training plan by ID from data folder"""
+@app.get("/plans/{user_id}")
+def get_plan(user_id: str):
+    """Get training plans for a user from data folder"""
     data_dir = Path("data")
+    user_plans_dir = data_dir / user_id / "training_plans"
     
-    # Find the JSON file with the given plan_id
-    for user_dir in data_dir.glob("*/training_plans"):
-        for json_file in user_dir.glob("*.json"):
-            try:
-                with open(json_file, 'r') as f:
-                    plan_data = json.load(f)
-                    if plan_data.get("id") == plan_id:
-                        return plan_data
-            except (json.JSONDecodeError, IOError):
-                continue
+    if not user_plans_dir.exists():
+        raise HTTPException(status_code=404, detail="User not found")
     
-    raise HTTPException(status_code=404, detail="Plan not found")
+    plans = []
+    for json_file in user_plans_dir.glob("*.json"):
+        try:
+            with open(json_file, 'r') as f:
+                plan_data = json.load(f)
+                plans.append(plan_data)
+        except (json.JSONDecodeError, IOError):
+            continue
+    
+    if not plans:
+        raise HTTPException(status_code=404, detail="No plans found for user")
+    
+    return {"user_id": user_id, "plans": plans}
