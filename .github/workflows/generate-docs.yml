@@ -117,19 +117,21 @@ jobs:
               return count + Object.keys(openapi.paths[path]).length;
             }, 0);
             
-            const comment = `## 📚 API Documentation Generated
-            
-**${apiTitle}** (v${apiVersion})
-
-- **Endpoints**: ${endpointCount} endpoints across ${paths.length} paths
-- **Documentation**: Available in the artifacts section below
-- **OpenAPI Spec**: \`openapi.json\` artifact  
-- **HTML Docs**: \`api-docs.html\` artifact
-
-### API Endpoints Summary:
-${paths.map(path => `- \`${path}\``).join('\n')}
-
-🔗 Download the documentation artifacts to view the full interactive API documentation.`;
+            const comment = [
+              '## 📚 API Documentation Generated',
+              '',
+              `**${apiTitle}** (v${apiVersion})`,
+              '',
+              `- **Endpoints**: ${endpointCount} endpoints across ${paths.length} paths`,
+              '- **Documentation**: Available in the artifacts section below',
+              '- **OpenAPI Spec**: `openapi.json` artifact',
+              '- **HTML Docs**: `api-docs.html` artifact',
+              '',
+              '### API Endpoints Summary:',
+              ...paths.map(path => `- \`${path}\``),
+              '',
+              '🔗 Download the documentation artifacts to view the full interactive API documentation.'
+            ].join('\n');
             
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
