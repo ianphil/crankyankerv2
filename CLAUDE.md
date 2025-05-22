@@ -12,6 +12,7 @@ This is a FastAPI-based training plan application using `uv` for Python dependen
 - **Debug/Development**: Use F5 (configured for debugging)
 - **Run development server**: `uv run uvicorn app.main:app --reload`
 - **Production server**: `uv run gunicorn --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 app.main:app`
+- **Post-merge cleanup**: `git checkout master && git branch -d <branch-name> && git pull origin master`
 
 ## Architecture
 
