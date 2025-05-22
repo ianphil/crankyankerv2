@@ -1,0 +1,11 @@
+@baseUrl = http://localhost:8000
+
+###
+# Get root message
+GET {{baseUrl}}/
+Accept: application/json
+
+###
+# Get an item by ID with optional query
+GET {{baseUrl}}/items/42?q=skippy
+Accept: application/json

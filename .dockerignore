@@ -1,0 +1,22 @@
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual env
+.venv/
+venv/
+
+# Lockfiles and config if you don’t need them in the image
+# *.lock
+
+# IDE/editor dirs
+.vscode/
+.idea/
+
+# Dockerfile artifacts
+docker-compose.yml
+
+# System files
+.DS_Store
