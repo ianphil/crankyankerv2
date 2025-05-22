@@ -11,3 +11,5 @@ wheels/
 
 uv.lock
 data/
+
+.pytest_cache/
